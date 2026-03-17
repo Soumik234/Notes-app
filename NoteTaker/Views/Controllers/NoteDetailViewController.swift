@@ -105,36 +105,39 @@ class NoteDetailViewController: UIViewController {
     func applyFormatting(isBold: Bool = false, isItalic: Bool = false) {
         let range = contentTextView.selectedRange
         guard range.length > 0 else { return }
-        
+
         let attributedString = NSMutableAttributedString(attributedString: contentTextView.attributedText)
         let baseFont = UIFont.systemFont(ofSize: 16)
-        
+
         attributedString.enumerateAttribute(.font, in: range, options: []) { existingFont, attrRange, _ in
             var newFont = existingFont as? UIFont ?? baseFont
-            
+            var traits = newFont.fontDescriptor.symbolicTraits
+
             if isBold {
-                let isBoldAlready = newFont.fontDescriptor.symbolicTraits.contains(.traitBold)
-                let traits: UIFontDescriptor.SymbolicTraits = isBoldAlready ? [] : .traitBold
-                
-                if let descriptor = newFont.fontDescriptor.withSymbolicTraits(traits) {
-                    newFont = UIFont(descriptor: descriptor, size: newFont.pointSize)
+                if traits.contains(.traitBold) {
+                    traits.remove(.traitBold)
+                } else {
+                    traits.insert(.traitBold)
                 }
             }
-            
+
             if isItalic {
-                let isItalicAlready = newFont.fontDescriptor.symbolicTraits.contains(.traitItalic)
-                let traits: UIFontDescriptor.SymbolicTraits = isItalicAlready ? [] : .traitItalic
-                
-                if let descriptor = newFont.fontDescriptor.withSymbolicTraits(traits) {
-                    newFont = UIFont(descriptor: descriptor, size: newFont.pointSize)
+                if traits.contains(.traitItalic) {
+                    traits.remove(.traitItalic)
+                } else {
+                    traits.insert(.traitItalic)
                 }
             }
-            
+
+            if let descriptor = newFont.fontDescriptor.withSymbolicTraits(traits) {
+                newFont = UIFont(descriptor: descriptor, size: newFont.pointSize)
+            }
+
             attributedString.addAttribute(.font, value: newFont, range: attrRange)
         }
-        
+
         contentTextView.attributedText = attributedString
-        contentTextView.selectedRange = range
+        contentTextView.selectedRange = range  // ✅ restore selection
     }
     
     @objc func saveTapped() {
