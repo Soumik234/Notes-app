@@ -28,6 +28,7 @@ class ChecklistViewController: UIViewController {
         title = "Checklist"
         tableView.delegate = self
         tableView.dataSource = self
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "ChecklistCell")
         
         addItemButton.addTarget(self, action: #selector(addChecklistItem), for: .touchUpInside)
         addItemTextField.placeholder = "Add checklist item..."

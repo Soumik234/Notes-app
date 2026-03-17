@@ -13,10 +13,10 @@ class NoteDetailViewController: UIViewController {
     
     @IBOutlet weak var titleTextField: UITextField!
     @IBOutlet weak var contentTextView: UITextView!
-    @IBOutlet weak var boldButton: UIButton!
-    @IBOutlet weak var italicButton: UIButton!
-    @IBOutlet weak var underlineButton: UIButton!
-    @IBOutlet weak var checklistButton: UIButton!
+    @IBOutlet weak var boldButton: UIBarButtonItem!
+    @IBOutlet weak var italicButton: UIBarButtonItem!
+    @IBOutlet weak var underlineButton: UIBarButtonItem!
+    @IBOutlet weak var checklistButton: UIBarButtonItem!
     
     var viewModel: NoteDetailViewModel!
     var cancellables = Set<AnyCancellable>()
@@ -32,21 +32,18 @@ class NoteDetailViewController: UIViewController {
         title = "Edit Note"
         titleTextField.text = viewModel.title
         contentTextView.text = viewModel.content
+        contentTextView.font = UIFont.systemFont(ofSize: 16)
         
-        boldButton.setTitle("B", for: .normal)
-        boldButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
-        boldButton.addTarget(self, action: #selector(toggleBold), for: .touchUpInside)
+        boldButton.target = self
+        boldButton.action = #selector(toggleBold)
+        italicButton.target = self
+        italicButton.action = #selector(toggleItalic)
+        underlineButton.target = self
+        underlineButton.action = #selector(toggleUnderlineAction)
+        checklistButton.target = self
+        checklistButton.action = #selector(openChecklist)
         
-        italicButton.setTitle("I", for: .normal)
-        italicButton.titleLabel?.font = UIFont.italicSystemFont(ofSize: 16)
-        italicButton.addTarget(self, action: #selector(toggleItalic), for: .touchUpInside)
-        
-        underlineButton.setTitle("U", for: .normal)
-        underlineButton.setTitleColor(.systemBlue, for: .normal)
-        underlineButton.addTarget(self, action: #selector(toggleUnderlineAction), for: .touchUpInside)
-        
-        checklistButton.setTitle("☑", for: .normal)
-        checklistButton.addTarget(self, action: #selector(openChecklist), for: .touchUpInside)
+        titleTextField.addTarget(self, action: #selector(titleTextChanged), for: .editingChanged)
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             title: "Done",
@@ -67,6 +64,10 @@ class NoteDetailViewController: UIViewController {
     
     func setupTextViewDelegate() {
         contentTextView.delegate = self
+    }
+    
+    @objc private func titleTextChanged() {
+        viewModel.title = titleTextField.text ?? ""
     }
     
     @objc func toggleBold() {
@@ -133,6 +134,7 @@ class NoteDetailViewController: UIViewController {
         }
         
         contentTextView.attributedText = attributedString
+        contentTextView.selectedRange = range
     }
     
     @objc func saveTapped() {
