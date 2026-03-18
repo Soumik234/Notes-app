@@ -75,11 +75,29 @@ extension NoteListViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "NoteCell", for: indexPath)
         let note = viewModel.notes[indexPath.row]
-        
+
         var config = cell.defaultContentConfiguration()
         config.text = note.title?.isEmpty == false ? note.title : "Untitled"
-        config.secondaryText = note.content
-        
+
+        // Show only first 2 lines / 100 chars of content
+        let rawContent = note.content ?? ""
+        let lines = rawContent
+            .components(separatedBy: .newlines)
+            .map { $0.trimmingCharacters(in: .whitespaces) }
+            .filter { !$0.isEmpty }
+
+        let preview: String
+        if lines.isEmpty {
+            preview = "No additional text"
+        } else {
+            let firstTwo = lines.prefix(2).joined(separator: " · ")
+            preview = firstTwo.count > 100 ? String(firstTwo.prefix(100)) + "…" : firstTwo
+        }
+
+        config.secondaryText = preview
+        config.secondaryTextProperties.numberOfLines = 2
+        config.secondaryTextProperties.lineBreakMode = .byTruncatingTail
+
         cell.contentConfiguration = config
         return cell
     }

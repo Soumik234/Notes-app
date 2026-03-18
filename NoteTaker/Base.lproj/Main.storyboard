@@ -136,60 +136,11 @@
                         <outlet property="italicButton" destination="o7B-3E-0Ol" id="TFS-Et-0V3"/>
                         <outlet property="titleTextField" destination="3SS-3J-D48" id="RTs-pH-djT"/>
                         <outlet property="underlineButton" destination="xrs-7z-Oba" id="Ih1-X2-iKd"/>
-                        <segue destination="A7C-Be-VN8" kind="show" id="hya-oN-lAA"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="nv2-0P-rra" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2052.6717557251909" y="130.98591549295776"/>
-        </scene>
-        <!--Checklist View Controller-->
-        <scene sceneID="Dsc-QV-Dmz">
-            <objects>
-                <viewController storyboardIdentifier="ChecklistViewController" id="A7C-Be-VN8" customClass="ChecklistViewController" customModule="NoteTaker" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="iF4-lU-0sP">
-                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="Oh0-gk-eOL">
-                                <rect key="frame" x="0.0" y="172" width="393" height="549"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                            </tableView>
-                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Ls6-PT-iOE">
-                                <rect key="frame" x="16" y="750" width="32" height="34"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits"/>
-                            </textField>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Uat-hq-arw">
-                                <rect key="frame" x="322" y="749.66666666666663" width="55" height="35"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="Add"/>
-                            </button>
-                        </subviews>
-                        <viewLayoutGuide key="safeArea" id="m82-Qg-2C1"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                        <constraints>
-                            <constraint firstItem="Oh0-gk-eOL" firstAttribute="top" secondItem="m82-Qg-2C1" secondAttribute="top" id="8TT-Pt-ceb"/>
-                            <constraint firstItem="m82-Qg-2C1" firstAttribute="trailing" secondItem="Uat-hq-arw" secondAttribute="trailing" constant="16" id="Avd-Lv-V8a"/>
-                            <constraint firstItem="m82-Qg-2C1" firstAttribute="bottom" secondItem="Ls6-PT-iOE" secondAttribute="bottom" id="FJK-1Z-GdB"/>
-                            <constraint firstItem="Ls6-PT-iOE" firstAttribute="top" secondItem="Oh0-gk-eOL" secondAttribute="bottom" constant="29" id="QWO-Ax-1GH"/>
-                            <constraint firstItem="Oh0-gk-eOL" firstAttribute="leading" secondItem="m82-Qg-2C1" secondAttribute="leading" id="Qvg-g9-aQA"/>
-                            <constraint firstItem="Uat-hq-arw" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Ls6-PT-iOE" secondAttribute="trailing" constant="8" symbolic="YES" id="TBK-cF-7lg"/>
-                            <constraint firstItem="Uat-hq-arw" firstAttribute="centerY" secondItem="Ls6-PT-iOE" secondAttribute="centerY" id="dU4-j5-LxM"/>
-                            <constraint firstItem="Oh0-gk-eOL" firstAttribute="trailing" secondItem="m82-Qg-2C1" secondAttribute="trailing" id="nEZ-Y5-zdH"/>
-                            <constraint firstItem="Ls6-PT-iOE" firstAttribute="leading" secondItem="m82-Qg-2C1" secondAttribute="leading" constant="16" id="vAS-OA-P11"/>
-                        </constraints>
-                    </view>
-                    <navigationItem key="navigationItem" id="uSD-hD-JFV"/>
-                    <connections>
-                        <outlet property="addItemButton" destination="Uat-hq-arw" id="bcr-Gb-lZt"/>
-                        <outlet property="addItemTextField" destination="Ls6-PT-iOE" id="9fO-Qg-8Tg"/>
-                        <outlet property="tableView" destination="Oh0-gk-eOL" id="xu5-PS-20Z"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="b4E-Mj-bEv" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="3001" y="131"/>
         </scene>
     </scenes>
     <resources>

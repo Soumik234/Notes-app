@@ -47,7 +47,7 @@ class NoteDetailViewController: UIViewController {
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             title: "Done",
-            style: .done,
+            style: .prominent,
             target: self,
             action: #selector(saveTapped)
         )
@@ -94,12 +94,15 @@ class NoteDetailViewController: UIViewController {
         
         contentTextView.attributedText = attributedString
     }
-    
-    @objc func openChecklist() {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let checklistVC = storyboard.instantiateViewController(withIdentifier: "ChecklistViewController") as! ChecklistViewController
-        checklistVC.viewModel = viewModel
-        navigationController?.pushViewController(checklistVC, animated: true)
+
+    private func insertCheckbox() {
+        let checkboxText = "☐ "
+        let selectedRange = contentTextView.selectedRange
+        let updatedText = NSMutableString(string: contentTextView.text ?? "")
+        updatedText.insert(checkboxText, at: selectedRange.location)
+        contentTextView.text = updatedText as String
+        contentTextView.selectedRange = NSRange(location: selectedRange.location + checkboxText.count, length: 0)
+        viewModel.content = contentTextView.text
     }
     
     func applyFormatting(isBold: Bool = false, isItalic: Bool = false) {
@@ -146,10 +149,91 @@ class NoteDetailViewController: UIViewController {
         viewModel.saveNote()
         navigationController?.popViewController(animated: true)
     }
+    
+    // MARK: - Checklist Properties
+    private var isChecklistMode = false
+
+    @objc func openChecklist() {
+        isChecklistMode = true
+        insertChecklistItem()
+    }
+
+    private func insertChecklistItem(at location: Int? = nil) {
+        let attachment = makeCircularCheckboxAttachment(checked: false)
+        let attachmentString = NSMutableAttributedString(attachment: attachment)
+        
+        // Add a space after the checkbox
+        let spaceAttr = NSMutableAttributedString(string: " ")
+        spaceAttr.addAttribute(.font, value: UIFont.systemFont(ofSize: 16), range: NSRange(location: 0, length: 1))
+        attachmentString.append(spaceAttr)
+        
+        let insertLocation = location ?? contentTextView.selectedRange.location
+        let fullText = NSMutableAttributedString(attributedString: contentTextView.attributedText)
+        
+        // Prepend newline if not at start and previous char isn't newline
+        if insertLocation > 0 {
+            let prevChar = (fullText.string as NSString).substring(with: NSRange(location: insertLocation - 1, length: 1))
+            if prevChar != "\n" {
+                let newline = NSAttributedString(string: "\n")
+                fullText.insert(newline, at: insertLocation)
+                fullText.insert(attachmentString, at: insertLocation + 1)
+                contentTextView.attributedText = fullText
+                contentTextView.selectedRange = NSRange(location: insertLocation + 1 + attachmentString.length, length: 0)
+                return
+            }
+        }
+        
+        fullText.insert(attachmentString, at: insertLocation)
+        contentTextView.attributedText = fullText
+        contentTextView.selectedRange = NSRange(location: insertLocation + attachmentString.length, length: 0)
+        viewModel.content = contentTextView.text
+    }
+
+    private func makeCircularCheckboxAttachment(checked: Bool) -> NSTextAttachment {
+        let size = CGSize(width: 20, height: 20)
+        let renderer = UIGraphicsImageRenderer(size: size)
+        let image = renderer.image { ctx in
+            let rect = CGRect(origin: .zero, size: size).insetBy(dx: 1.5, dy: 1.5)
+            let context = ctx.cgContext
+            
+            if checked {
+                // Filled circle with checkmark
+                UIColor.systemBlue.setFill()
+                context.fillEllipse(in: rect)
+                // Draw checkmark
+                UIColor.white.setStroke()
+                context.setLineWidth(2)
+                context.setLineCap(.round)
+                context.setLineJoin(.round)
+                let checkPath = UIBezierPath()
+                checkPath.move(to: CGPoint(x: size.width * 0.25, y: size.height * 0.5))
+                checkPath.addLine(to: CGPoint(x: size.width * 0.45, y: size.height * 0.7))
+                checkPath.addLine(to: CGPoint(x: size.width * 0.75, y: size.height * 0.3))
+                checkPath.stroke()
+            } else {
+                // Empty circle
+                UIColor.systemGray3.setStroke()
+                context.setLineWidth(1.5)
+                context.strokeEllipse(in: rect)
+            }
+        }
+        
+        let attachment = NSTextAttachment()
+        attachment.image = image
+        attachment.bounds = CGRect(x: 0, y: -4, width: 20, height: 20)
+        return attachment
+    }
 }
 
 extension NoteDetailViewController: UITextViewDelegate {
     func textViewDidChange(_ textView: UITextView) {
         viewModel.content = textView.text
+    }
+}
+
+extension NoteDetailViewController: UIGestureRecognizerDelegate {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer,
+                           shouldRecognizeSimultaneouslyWith other: UIGestureRecognizer) -> Bool {
+        return true
     }
 }

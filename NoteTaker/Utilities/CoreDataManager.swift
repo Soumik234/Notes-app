@@ -77,41 +77,4 @@ class CoreDataManager {
         saveContext()
     }
     
-    func fetchChecklistItems(for note: Note) -> [ChecklistItem] {
-        let fetchRequest = NSFetchRequest<ChecklistItem>(entityName: "ChecklistItem")
-        fetchRequest.predicate = NSPredicate(format: "note == %@", note)
-        fetchRequest.sortDescriptors = [
-            NSSortDescriptor(keyPath: \ChecklistItem.order, ascending: true)
-        ]
-        
-        do {
-            return try viewContext.fetch(fetchRequest)
-        } catch {
-            print("Error fetching checklist items: \(error.localizedDescription)")
-            return []
-        }
-    }
-    
-    func addChecklistItem(to note: Note, title: String, at order: Int16) -> ChecklistItem {
-        let item = NSEntityDescription.insertNewObject(forEntityName: "ChecklistItem", into: viewContext) as! ChecklistItem
-        item.id = UUID()
-        item.title = title
-        item.isCompleted = false
-        item.order = order
-        item.note = note
-        
-        note.modifiedDate = Date()
-        saveContext()
-        return item
-    }
-    
-    func deleteChecklistItem(_ item: ChecklistItem) {
-        viewContext.delete(item)
-        saveContext()
-    }
-    
-    func toggleChecklistItem(_ item: ChecklistItem) {
-        item.isCompleted = !item.isCompleted
-        saveContext()
-    }
 }
