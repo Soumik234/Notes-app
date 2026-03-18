@@ -53,6 +53,12 @@ class CoreDataManager {
     }
     
     func createNote(title: String = "", content: String = "") -> Note {
+        let note = createDraftNote(title: title, content: content)
+        saveContext()
+        return note
+    }
+
+    func createDraftNote(title: String = "", content: String = "") -> Note {
         let note = NSEntityDescription.insertNewObject(forEntityName: "Note", into: viewContext) as! Note
         note.id = UUID()
         note.title = title
@@ -60,8 +66,6 @@ class CoreDataManager {
         note.createdDate = Date()
         note.modifiedDate = Date()
         note.isFavorite = false
-        
-        saveContext()
         return note
     }
     

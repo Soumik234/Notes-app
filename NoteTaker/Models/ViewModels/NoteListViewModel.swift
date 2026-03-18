@@ -35,7 +35,7 @@ class NoteListViewModel: ObservableObject {
     }
     
     func createNewNote() -> Note {
-        return dataManager.createNote(title: "New Note", content: "")
+        return dataManager.createDraftNote(title: "", content: "")
     }
     
     func deleteNote(_ note: Note) {

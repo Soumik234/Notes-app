@@ -135,6 +135,7 @@
                         <outlet property="contentTextView" destination="X7a-mw-3jj" id="qjp-aa-XAE"/>
                         <outlet property="italicButton" destination="o7B-3E-0Ol" id="TFS-Et-0V3"/>
                         <outlet property="titleTextField" destination="3SS-3J-D48" id="RTs-pH-djT"/>
+                        <outlet property="toolbarBottomConstraint" destination="1bR-BS-Hu4" id="9uA-WJ-2sY"/>
                         <outlet property="underlineButton" destination="xrs-7z-Oba" id="Ih1-X2-iKd"/>
                     </connections>
                 </viewController>

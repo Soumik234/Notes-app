@@ -53,15 +53,15 @@ class NoteListViewController: UIViewController {
     
     @objc func addNoteTapped() {
         let newNote = viewModel.createNewNote()
-        navigateToNoteDetail(note: newNote)
+        navigateToNoteDetail(note: newNote, isNew: true)
     }
     
-    func navigateToNoteDetail(note: Note) {
+    func navigateToNoteDetail(note: Note, isNew: Bool) {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let detailVC = storyboard.instantiateViewController(
             withIdentifier: "NoteDetailViewController"
         ) as! NoteDetailViewController
-        detailVC.viewModel = NoteDetailViewModel(note: note)
+        detailVC.viewModel = NoteDetailViewModel(note: note, isNew: isNew)
         navigationController?.pushViewController(detailVC, animated: true)
     }
 }
@@ -105,7 +105,7 @@ extension NoteListViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         let selectedNote = viewModel.notes[indexPath.row]
-        navigateToNoteDetail(note: selectedNote)
+        navigateToNoteDetail(note: selectedNote, isNew: false)
     }
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {

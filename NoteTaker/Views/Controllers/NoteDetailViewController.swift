@@ -17,6 +17,7 @@ class NoteDetailViewController: UIViewController {
     @IBOutlet weak var italicButton: UIBarButtonItem!
     @IBOutlet weak var underlineButton: UIBarButtonItem!
     @IBOutlet weak var checklistButton: UIBarButtonItem!
+    @IBOutlet weak var toolbarBottomConstraint: NSLayoutConstraint!
     
     var viewModel: NoteDetailViewModel!
     var cancellables = Set<AnyCancellable>()
@@ -26,6 +27,19 @@ class NoteDetailViewController: UIViewController {
         setupUI()
         setupBindings()
         setupTextViewDelegate()
+        setupKeyboardObservers()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        if isMovingFromParent {
+            viewModel.discardNoteIfNeeded()
+        }
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
     
     func setupUI() {
@@ -64,6 +78,55 @@ class NoteDetailViewController: UIViewController {
     
     func setupTextViewDelegate() {
         contentTextView.delegate = self
+    }
+
+    private func setupKeyboardObservers() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleKeyboardWillChangeFrame),
+            name: UIResponder.keyboardWillChangeFrameNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleKeyboardWillHide),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
+    }
+
+    @objc private func handleKeyboardWillChangeFrame(_ notification: Notification) {
+        guard let userInfo = notification.userInfo,
+              let frameValue = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else {
+            return
+        }
+
+        let keyboardFrame = frameValue.cgRectValue
+        let keyboardFrameInView = view.convert(keyboardFrame, from: view.window)
+        let overlap = max(0, view.bounds.maxY - keyboardFrameInView.origin.y)
+        let adjustedOverlap = max(0, overlap - view.safeAreaInsets.bottom)
+
+        updateToolbarBottomConstraint(to: adjustedOverlap, userInfo: userInfo)
+    }
+
+    @objc private func handleKeyboardWillHide(_ notification: Notification) {
+        updateToolbarBottomConstraint(to: 0, userInfo: notification.userInfo)
+    }
+
+    private func updateToolbarBottomConstraint(to constant: CGFloat, userInfo: [AnyHashable: Any]?) {
+        guard toolbarBottomConstraint.constant != constant else { return }
+
+        toolbarBottomConstraint.constant = constant
+
+        if let duration = userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double,
+           let curveRaw = userInfo?[UIResponder.keyboardAnimationCurveUserInfoKey] as? UInt {
+            let options = UIView.AnimationOptions(rawValue: curveRaw << 16)
+            UIView.animate(withDuration: duration, delay: 0, options: options) {
+                self.view.layoutIfNeeded()
+            }
+        } else {
+            view.layoutIfNeeded()
+        }
     }
     
     @objc private func titleTextChanged() {
@@ -144,8 +207,19 @@ class NoteDetailViewController: UIViewController {
     }
     
     @objc func saveTapped() {
-        viewModel.title = titleTextField.text ?? ""
-        viewModel.content = contentTextView.text
+        let title = titleTextField.text ?? ""
+        let content = contentTextView.text
+        let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedContent = content?.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        if viewModel.isNew, trimmedTitle.isEmpty, ((trimmedContent?.isEmpty) != nil) {
+            viewModel.discardNoteIfNeeded()
+            navigationController?.popViewController(animated: true)
+            return
+        }
+
+        viewModel.title = title
+        viewModel.content = content ?? ""
         viewModel.saveNote()
         navigationController?.popViewController(animated: true)
     }
